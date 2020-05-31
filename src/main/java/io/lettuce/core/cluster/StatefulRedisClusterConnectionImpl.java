@@ -64,6 +64,10 @@ public class StatefulRedisClusterConnectionImpl<K, V> extends RedisChannelHandle
     private String clientName;
 
     protected final RedisCodec<K, V> codec;
+    /**
+     * 同步command采用动态代理的方式构建，InvocationHandler实现类为
+     * {@link ClusterFutureSyncInvocationHandler}
+     */
     protected final RedisAdvancedClusterCommands<K, V> sync;
     protected final RedisAdvancedClusterAsyncCommandsImpl<K, V> async;
     protected final RedisAdvancedClusterReactiveCommandsImpl<K, V> reactive;

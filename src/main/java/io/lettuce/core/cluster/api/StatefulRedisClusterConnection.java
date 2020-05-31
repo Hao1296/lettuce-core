@@ -30,6 +30,8 @@ import io.lettuce.core.cluster.models.partitions.Partitions;
 /**
  * A stateful cluster connection. Advanced cluster connections provide transparent command routing based on the first command
  * key.
+ * {@link io.lettuce.core.cluster.RedisClusterClient#connect()}返回
+ * {@link io.lettuce.core.cluster.StatefulRedisClusterConnectionImpl}实例
  *
  * @param <K> Key type.
  * @param <V> Value type.
@@ -65,11 +67,11 @@ public interface StatefulRedisClusterConnection<K, V> extends StatefulConnection
      * connection is bound to the node id. Once the cluster topology view is updated, the connection will try to reconnect the
      * to the node with the specified {@code nodeId}, that behavior can also lead to a closed connection once the node with the
      * specified {@code nodeId} is no longer part of the cluster.
-     *
+     * <p>
      * Do not close the connections. Otherwise, unpredictable behavior will occur. The nodeId must be part of the cluster and is
      * validated against the current topology view in {@link io.lettuce.core.cluster.models.partitions.Partitions}.
-     *
-     *
+     * <p>
+     * <p>
      * In contrast to the {@link StatefulRedisClusterConnection}, node-connections do not route commands to other cluster nodes.
      *
      * @param nodeId the node Id
@@ -83,11 +85,11 @@ public interface StatefulRedisClusterConnection<K, V> extends StatefulConnection
      * node list. This connection is bound to the node id. Once the cluster topology view is updated, the connection will try to
      * reconnect the to the node with the specified {@code nodeId}, that behavior can also lead to a closed connection once the
      * node with the specified {@code nodeId} is no longer part of the cluster.
-     *
+     * <p>
      * Do not close the connections. Otherwise, unpredictable behavior will occur. The nodeId must be part of the cluster and is
      * validated against the current topology view in {@link io.lettuce.core.cluster.models.partitions.Partitions}.
-     *
-     *
+     * <p>
+     * <p>
      * In contrast to the {@link StatefulRedisClusterConnection}, node-connections do not route commands to other cluster nodes.
      *
      * @param nodeId the node Id
@@ -148,7 +150,6 @@ public interface StatefulRedisClusterConnection<K, V> extends StatefulConnection
     ReadFrom getReadFrom();
 
     /**
-     *
      * @return Known partitions for this connection.
      */
     Partitions getPartitions();
