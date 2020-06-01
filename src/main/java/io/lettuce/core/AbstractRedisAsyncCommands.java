@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import io.lettuce.core.GeoArgs.Unit;
 import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.api.async.*;
+import io.lettuce.core.cluster.StatefulRedisClusterConnectionImpl;
 import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.internal.LettuceAssert;
@@ -47,7 +48,9 @@ public abstract class AbstractRedisAsyncCommands<K, V> implements RedisHashAsync
         RedisSortedSetAsyncCommands<K, V>, RedisScriptingAsyncCommands<K, V>, RedisServerAsyncCommands<K, V>,
         RedisHLLAsyncCommands<K, V>, BaseRedisAsyncCommands<K, V>, RedisTransactionalAsyncCommands<K, V>,
         RedisGeoAsyncCommands<K, V>, RedisClusterAsyncCommands<K, V> {
-
+    /**
+     * @see StatefulRedisClusterConnectionImpl
+     */
     private final StatefulConnection<K, V> connection;
     private final RedisCodec<K, V> codec;
     private final RedisCommandBuilder<K, V> commandBuilder;
@@ -462,6 +465,9 @@ public abstract class AbstractRedisAsyncCommands<K, V> implements RedisHashAsync
         return dispatch(new AsyncCommand<>(new Command<>(type, output, args)));
     }
 
+    /**
+     * 调用connection.dispatch,并根据结果构建返回值
+     */
     public <T> AsyncCommand<K, V, T> dispatch(RedisCommand<K, V, T> cmd) {
         AsyncCommand<K, V, T> asyncCommand = new AsyncCommand<>(cmd);
         RedisCommand<K, V, T> dispatched = connection.dispatch(asyncCommand);

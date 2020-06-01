@@ -51,18 +51,27 @@ import io.lettuce.core.protocol.*;
  * A {@link ConnectionWatchdog} monitors each connection and reconnects automatically until {@link #close} is called. All
  * pending commands will be (re)sent after successful reconnection.
  *
+ * 该类只是“集群连接”的门面，并不实际维护和redis节点间的连接；
+ * 维护和RedisCluster各节点间连接的责任交给从RedisChannelHandler继承来的{@link RedisChannelWriter channelWriter}属性，
+ * 该属性在集群模式下为{@link ClusterDistributionChannelWriter}的实例
+ *
  * @author Mark Paluch
  * @since 4.0
  */
 public class StatefulRedisClusterConnectionImpl<K, V> extends RedisChannelHandler<K, V> implements
         StatefulRedisClusterConnection<K, V> {
 
+    /**
+     * 集群拓扑抽象(集群成员、主从关系、slots分布)
+     */
     private Partitions partitions;
 
     private char[] password;
     private boolean readOnly;
     private String clientName;
-
+    /**
+     * 负责key和value的编解码
+     */
     protected final RedisCodec<K, V> codec;
     /**
      * 同步command采用动态代理的方式构建，InvocationHandler实现类为

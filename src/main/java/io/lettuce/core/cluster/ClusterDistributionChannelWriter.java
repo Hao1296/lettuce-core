@@ -34,6 +34,10 @@ import io.lettuce.core.resource.ClientResources;
 
 /**
  * Channel writer for cluster operation. This writer looks up the right partition by hash/slot for the operation.
+ * write大致流程：
+ * 1. 判断当前slot属于哪个Redis节点;
+ * 2. 通过ConnectionProvider获取和对应节点间的连接;
+ * 3. 序列化请求，并将数据写入连接
  *
  * @author Mark Paluch
  * @since 3.0
@@ -44,6 +48,11 @@ class ClusterDistributionChannelWriter implements RedisChannelWriter {
     private final ClusterEventListener clusterEventListener;
     private final int executionLimit;
 
+    /**
+     * 创建和Redis节点间实际的连接
+     *
+     * @see PooledClusterConnectionProvider
+     */
     private ClusterConnectionProvider clusterConnectionProvider;
     private AsyncClusterConnectionProvider asyncClusterConnectionProvider;
     private boolean closed = false;

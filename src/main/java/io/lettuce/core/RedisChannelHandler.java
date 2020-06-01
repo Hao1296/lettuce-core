@@ -57,6 +57,9 @@ public abstract class RedisChannelHandler<K, V> implements Closeable, Connection
     private Duration timeout;
     private CloseEvents closeEvents = new CloseEvents();
 
+    /**
+     * 参考io.lettuce.core.cluster.ClusterDistributionChannelWriter
+     */
     private final RedisChannelWriter channelWriter;
     private final ClientResources clientResources;
     private final boolean tracingEnabled;

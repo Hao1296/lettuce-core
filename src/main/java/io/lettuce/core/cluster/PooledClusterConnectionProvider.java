@@ -69,6 +69,13 @@ class PooledClusterConnectionProvider<K, V> implements ClusterConnectionProvider
     private boolean autoFlushCommands = true;
     private ReadFrom readFrom;
 
+    /**
+     *
+     * @param redisClusterClient 对应的RedisClusterClient实例
+     * @param clusterWriter Writer实例,见{@link ClusterDistributionChannelWriter}
+     * @param redisCodec key和value编解码
+     * @param clusterEventListener 集群拓扑刷新任务，见{@link ClusterTopologyRefreshScheduler}
+     */
     public PooledClusterConnectionProvider(RedisClusterClient redisClusterClient, RedisChannelWriter clusterWriter,
             RedisCodec<K, V> redisCodec, ClusterEventListener clusterEventListener) {
 
@@ -155,16 +162,17 @@ class PooledClusterConnectionProvider<K, V> implements ClusterConnectionProvider
         synchronized (stateLock) {
             readerCandidates = readers[slot];
         }
-
+        //该slot之前没有被读取过，故没有候选连接
         if (readerCandidates == null) {
-
+            //1. 获取slot对应的master节点(注意:这里只读内存中的集群拓扑数据，无网络通信)
             RedisClusterNode master = partitions.getPartitionBySlot(slot);
             if (master == null) {
                 throw new PartitionSelectorException(String.format("Cannot determine a partition to read for slot %d.", slot),
                         partitions.clone());
             }
-
+            //2. 获取该master的"读备选"节点（nodeId和该master相同 或 和该master间是主从关系）
             List<RedisNodeDescription> candidates = getReadCandidates(master);
+            //3. 对candidates进行"偏爱度"排序
             List<RedisNodeDescription> selection = readFrom.select(new ReadFrom.Nodes() {
                 @Override
                 public List<RedisNodeDescription> getNodes() {
@@ -182,8 +190,9 @@ class PooledClusterConnectionProvider<K, V> implements ClusterConnectionProvider
                         "Cannot determine a partition to read for slot %d with setting %s.", slot, readFrom),
                         partitions.clone());
             }
-
+            //4. 尝试和所有读候选节点建立连接，并返回代表连接结果的Future数组
             readerCandidates = getReadFromConnections(selection);
+            //5. 告知后续流程: 当前的连接不是从内存缓存中获取的
             cached = false;
         }
 

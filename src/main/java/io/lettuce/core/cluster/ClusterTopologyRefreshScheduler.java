@@ -24,6 +24,8 @@ import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
 /**
+ *
+ * 集群拓扑数据刷新任务
  * @author Mark Paluch
  */
 class ClusterTopologyRefreshScheduler implements Runnable, ClusterEventListener {
