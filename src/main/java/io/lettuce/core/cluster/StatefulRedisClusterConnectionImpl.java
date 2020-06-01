@@ -66,7 +66,9 @@ public class StatefulRedisClusterConnectionImpl<K, V> extends RedisChannelHandle
     protected final RedisCodec<K, V> codec;
     /**
      * 同步command采用动态代理的方式构建，InvocationHandler实现类为
-     * {@link ClusterFutureSyncInvocationHandler}
+     * {@link ClusterFutureSyncInvocationHandler};
+     * 实际上,async是其实现的基础;
+     * sync的基本思想是调用async获取到Future,然后调用await同步等待结果
      */
     protected final RedisAdvancedClusterCommands<K, V> sync;
     protected final RedisAdvancedClusterAsyncCommandsImpl<K, V> async;

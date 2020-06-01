@@ -55,6 +55,9 @@ class ClusterFutureSyncInvocationHandler<K, V> extends AbstractInvocationHandler
     private final Class<?> asyncCommandsInterface;
     private final Class<?> nodeSelectionInterface;
     private final Class<?> nodeSelectionCommandsInterface;
+    /**
+     * @see StatefulRedisClusterConnectionImpl#async
+     */
     private final Object asyncApi;
 
     private final Map<Method, Method> apiMethodCache = new ConcurrentHashMap<>(RedisClusterCommands.class.getMethods().length,
